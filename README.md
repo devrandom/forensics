@@ -7,7 +7,11 @@ Usage:
 
 Put addresses you want to track in the file `seed-address`.  Optionally set
 the environment variable `MIN_HEIGHT` to the minimum block height
-you are interested in.  Then run:
+you are interested in.  Optionally set the environment variable `OMIT_BUSY_ADDRESSES`
+if you want to skip addresses with more than 25 transactions (those may be exchange
+hot wallets or such).
+
+Then run:
 
 ```sh
 ./track.py
@@ -20,4 +24,4 @@ that were found.  `txmap` also acts as the persistent state of the script.
 Limitations:
 
 - Only the last 25 transactions are considered for each address
-- Exchange wallets and mixers will result in a large number of unwanted results
+- Exchange wallets and mixers may result in a large number of unwanted hits

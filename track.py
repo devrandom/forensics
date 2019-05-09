@@ -11,6 +11,7 @@ class Esplora:
     def __init__(self):
         self.session = Session()
         self.base = 'https://blockstream.info/api/'
+        self.omit_busy_addresses = os.environ.get('OMIT_BUSY_ADDRESSES') is not None
 
     def get_txs_for_address(self, address, min_height=None):
         res = self.session.get(f'{self.base}address/{address}/txs/chain')
@@ -20,8 +21,13 @@ class Esplora:
             jtxs = [t for t in jtxs if t['status']['block_height'] >= min_height]
         txs = [self._cvt_tx(tx) for tx in jtxs]
         if len(txs) == 25:
-            # TODO chain by last seen
-            print(f'warning: tx list for {address} truncated at 25')
+            if self.omit_busy_addresses:
+                print(f'skipping busy address {address}')
+                return []
+            else:
+                # TODO chain by last seen
+                print(f'warning: tx list for {address} truncated at 25')
+
         return txs
 
     def _cvt_tx(self, j):
