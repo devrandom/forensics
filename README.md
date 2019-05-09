@@ -3,7 +3,7 @@
 Naive tracking of blockchain addresses by crawling the transaction
 graph starting at that address.
 
-Usage:
+## Usage
 
 Put addresses you want to track in the file `seed-address`.  Optionally set
 the environment variable `MIN_HEIGHT` to the minimum block height
@@ -21,7 +21,7 @@ You can kill and restart the process at any time.  Every time a scanning pass is
 done, the file `txmap` will be populated with a JSON dump of all transactions
 that were found.  `txmap` also acts as the persistent state of the script.
 
-Limitations:
+## Limitations
 
 - Only the last 25 transactions are considered for each address
-- Exchange wallets and mixers may result in a large number of unwanted hits
+- Exchange wallets and mixers may result in a large number of unwanted hits (but see `OMIT_BUSY_ADDRESSES` above)
