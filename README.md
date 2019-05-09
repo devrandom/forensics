@@ -9,9 +9,10 @@ Put addresses you want to track in the file `seed-address`.  Optionally set
 the environment variable `MIN_HEIGHT` to the minimum block height
 you are interested in.  Optionally set the environment variable `OMIT_BUSY_ADDRESSES`
 if you want to skip addresses with more than 25 transactions (those may be exchange
-hot wallets or such).
+hot wallets or such).  By default, amounts under 1 BTC are omitted, but you can change
+that via `MIN_VALUE` in satoshis. 
 
-Then run:
+To run:
 
 ```sh
 ./track.py

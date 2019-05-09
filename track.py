@@ -46,9 +46,10 @@ class Esplora:
 
 class Tracker:
     """Track addresses associated with a seed address list"""
-    def __init__(self, min_height):
+    def __init__(self, min_height, min_value):
         self.client = Esplora()
         self.min_height = min_height
+        self.min_value = min_value
         with open('seed-addresses') as f:
             self.addresses = set([l.strip() for l in f.readlines()])
         self.txmap = {}
@@ -58,7 +59,8 @@ class Tracker:
             self._write_txmap()
             for outs in self.txmap.values():
                 for out in outs:
-                    self.addresses.add(out['address'])
+                    if out['value'] > self.min_value:
+                        self.addresses.add(out['address'])
 
         self.seen_addresses = set()
 
@@ -72,6 +74,12 @@ class Tracker:
                     self.seen_addresses.add(address)
                     did_change = self.handle_address(address) or did_change
             self._write_txmap()
+
+        print('########## Report')
+        for outs in self.txmap.values():
+            for out in outs:
+                if out['value'] > self.min_value:
+                    print(f"{out['address']} {out['value']/100000000.0}")
 
     def _write_txmap(self):
         with open('txmap.new', 'w') as f:
@@ -89,7 +97,9 @@ class Tracker:
                 did_change = True
                 self.txmap[txid] = tx['outs']
                 for out in tx['outs']:
-                    self.addresses.add(out['address'])
+                    if out['value'] > self.min_value:
+                        #print(f'{out["address"]} {out["value"]}')
+                        self.addresses.add(out['address'])
         # print(f'change {did_change}')
         return did_change
 
@@ -99,8 +109,10 @@ def run():
     env_min_height = os.environ.get('MIN_HEIGHT')
     if env_min_height:
         min_height = int(env_min_height)
-    print(f'min height {min_height}')
-    Tracker(min_height).run()
+    # minimum 1 BTC
+    min_value = int(os.environ.get('MIN_VALUE', 100000000))
+    print(f'min height {min_height}, min value {min_value}')
+    Tracker(min_height, min_value).run()
 
 
 if __name__ == '__main__':
